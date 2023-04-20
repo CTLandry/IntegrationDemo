@@ -52,35 +52,30 @@ namespace IntegrationDemo
         /// Launch intent with pending intent for pushing the calling app back to the foreground once
         /// PrePass has navigated to driving mode and started all necessary services for the integration
         /// </summary>
-        /// <param name="IntegrationPartner">The integration partner ID provided by PrePass</param>
-        /// <param name="VIN">The selected vehicle's vin</param>
-        /// <param name="PendingIntent">A launch intent for the calling application</param>
         private void SendPendingIntentOnClick(object sender, EventArgs eventArgs)
         {
-            //Create and intent for foregrounding the integration partner's application
+            ///Create an intent for foregrounding the integration partner's application
             Intent foregroundCallingApp = Application.Context.PackageManager.GetLaunchIntentForPackage(Application.Context.PackageName);
             foregroundCallingApp.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
            
-            //Bundle the launch intent for the integration partner into a pending intent
-            //Pending intent should be Immutable for security purposes
+            ///Bundle the launch intent for the integration partner into a pending intent
+            ///Pending intent should be Immutable for security purposes
             PendingIntent pi = PendingIntent.GetActivity(Application.Context, 0, foregroundCallingApp, PendingIntentFlags.OneShot | PendingIntentFlags.Immutable);
 
-            //Create a launch intent for PrePass passing in the pending intent, integration partner id and VIN as part of the extras
+            ///Create a launch intent for PrePass
+            /// <param name="IntegrationPartner">The integration partner ID provided by PrePass</param>
+            /// <param name="VIN">The selected vehicle's vin</param>
+            /// <param name="PendingIntent">A launch intent for the calling application</param>
             var launchPrepass = Application.Context.PackageManager.GetLaunchIntentForPackage("com.prepass.motion");
             if (launchPrepass != null)
             {
                 launchPrepass.SetFlags(ActivityFlags.SingleTop | ActivityFlags.NewTask);
-                launchPrepass.PutExtra("IntegrationPartner", 3); //TSP Integration Partner
-                launchPrepass.PutExtra("VIN", "4V4NC9TJ96N434360");
+                launchPrepass.PutExtra("IntegrationPartner", 3); 
+                launchPrepass.PutExtra("VIN", "selectedVehiclesVin");
                 launchPrepass.PutExtra("PendingIntent", pi);
 
                 Application.Context.StartActivity(launchPrepass);
             }
-            else
-            {
-                //send them to the store?
-            }
-          
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
