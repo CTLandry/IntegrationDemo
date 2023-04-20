@@ -50,7 +50,8 @@ namespace IntegrationDemo
 
         /// <summary>
         /// Launch intent with pending intent for pushing the calling app back to the foreground once
-        /// PrePass has navigated to driving mode and started all necessary services for the integration
+        /// PrePass has navigated to driving mode and started all necessary services for the integration.
+        /// Intent should be sent upon each vehicle selection so that PrePass can use the applicable vin
         /// </summary>
         private void SendPendingIntentOnClick(object sender, EventArgs eventArgs)
         {
