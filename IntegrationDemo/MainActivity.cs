@@ -70,8 +70,8 @@ namespace IntegrationDemo
             if (launchPrepass != null)
             {
                 launchPrepass.SetFlags(ActivityFlags.SingleTop | ActivityFlags.NewTask);
-                launchPrepass.PutExtra("IntegrationPartner", 3); 
-                launchPrepass.PutExtra("VIN", "selectedVehiclesVin");
+                launchPrepass.PutExtra("IntegrationPartner", 3); //PrePass provides
+                launchPrepass.PutExtra("VIN", "selectedVehiclesVin"); 
                 launchPrepass.PutExtra("PendingIntent", pi);
 
                 Application.Context.StartActivity(launchPrepass);
