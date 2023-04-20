@@ -48,50 +48,31 @@ namespace IntegrationDemo
             return base.OnOptionsItemSelected(item);
         }
 
-       
-        private void SendBroadCastOnClick(object sender, EventArgs eventArgs)
-        {
-            var prepasspackageId = "com.prepass.motion"; //real use 
-            //var prepasspackageId = "com.prepass.integrationreceiver"; //integration test
-
-            Intent foregroundEroad = Application.Context.PackageManager.GetLaunchIntentForPackage(Application.Context.PackageName);
-            foregroundEroad.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
-            
-            PendingIntent pendingForegroundEroad = PendingIntent.GetActivity(Application.Context, 0, foregroundEroad, PendingIntentFlags.OneShot | PendingIntentFlags.Immutable);
-
-            var launchPrepass = new Intent("com.erode.VEHICLE_SELECTED");
-            if (launchPrepass != null)
-            {
-                launchPrepass.SetPackage(prepasspackageId);
-                launchPrepass.PutExtra("VIN", "send.vin.please");
-                launchPrepass.PutExtra("PendingIntent", pendingForegroundEroad);
-
-                SendBroadcast(launchPrepass);
-            }
-            else
-            {
-                //send them to the store? or just assume no integration?
-            }
-        }
-
-     
-
-
-
+        /// <summary>
+        /// Launch intent with pending intent for pushing the calling app back to the foreground once
+        /// PrePass has navigated to driving mode and started all necessary services for the integration
+        /// </summary>
+        /// <param name="IntegrationPartner">The integration partner ID provided by PrePass</param>
+        /// <param name="VIN">The selected vehicle's vin</param>
+        /// <param name="PendingIntent">A launch intent for the calling application</param>
         private void SendPendingIntentOnClick(object sender, EventArgs eventArgs)
         {
-            Intent foregroundEroad = Application.Context.PackageManager.GetLaunchIntentForPackage(Application.Context.PackageName);
-            foregroundEroad.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
+            //Create and intent for foregrounding the integration partner's application
+            Intent foregroundCallingApp = Application.Context.PackageManager.GetLaunchIntentForPackage(Application.Context.PackageName);
+            foregroundCallingApp.SetFlags(ActivityFlags.ClearTop | ActivityFlags.SingleTop);
            
+            //Bundle the launch intent for the integration partner into a pending intent
+            //Pending intent should be Immutable for security purposes
+            PendingIntent pi = PendingIntent.GetActivity(Application.Context, 0, foregroundCallingApp, PendingIntentFlags.OneShot | PendingIntentFlags.Immutable);
 
-            PendingIntent pendingForegroundEroad = PendingIntent.GetActivity(Application.Context, 0, foregroundEroad, PendingIntentFlags.OneShot | PendingIntentFlags.Immutable);
+            //Create a launch intent for PrePass passing in the pending intent, integration partner id and VIN as part of the extras
             var launchPrepass = Application.Context.PackageManager.GetLaunchIntentForPackage("com.prepass.motion");
             if (launchPrepass != null)
             {
                 launchPrepass.SetFlags(ActivityFlags.SingleTop | ActivityFlags.NewTask);
                 launchPrepass.PutExtra("IntegrationPartner", 3); //TSP Integration Partner
                 launchPrepass.PutExtra("VIN", "4V4NC9TJ96N434360");
-                launchPrepass.PutExtra("PendingIntent", pendingForegroundEroad);
+                launchPrepass.PutExtra("PendingIntent", pi);
 
                 Application.Context.StartActivity(launchPrepass);
             }
